@@ -1,6 +1,7 @@
 
 from pygame import transform, sprite, Rect
 from random import randint
+from numpy import sin, deg2rad, sqrt
 
 class Entity:
     def __init__(self, x = 0, y = 0, w = 0, h = 0):
@@ -8,15 +9,18 @@ class Entity:
         self.y = y
         self.w = w
         self.h = h
+        self.rotate = 0
+        self.padding = (sqrt(self.w * self.w + self.h * self.h) - self.w) / 2
         
-    def draw(self, screen, img, rotate = 0, local_area = None):
+    def draw(self, screen, img, local_area = None):
         img = transform.scale(img, (self.w, self.h))
-        if rotate:
-            img = transform.rotate(img, rotate)
+        if self.rotate:
+            img = transform.rotate(img, self.rotate)
 
-        screen.blit(img, (self.x, self.y), local_area)
+        screen.blit(img, (self.x - sin(deg2rad(self.rotate)) * self.padding, self.y - sin(deg2rad(self.rotate)) * self.padding ), local_area)
         
         # return screen
+
 
     def showInfor(self):
         print(self.x, self.y, self.w, self.h)
@@ -49,6 +53,7 @@ class Bird(Entity):
         super().__init__(x, y, w, h)
         self.speedUp = speedU
         self.speedDown = speedD
+        
 
 class Column(Entity):
     def __init__(self, x = 0, y = 0,w = 0, h = 0, margin = 80):
@@ -71,7 +76,7 @@ class Column(Entity):
         
     
     def collide_with(self, e, fix = 0):
-        return self.top.collide_with(e, fix) or self.bottom.collide_with(e, fix)
+        return self.top.collide_with(e, fix + 5) or self.bottom.collide_with(e, fix)
 
     def move(self, x, y):
         self.x += x

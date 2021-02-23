@@ -26,7 +26,7 @@ BACKGROUND_IMG = pygame.image.load("data/background.jpg")
 BIRD_IMG = pygame.image.load("data/bird.png")
 COLUMN_IMG = pygame.transform.scale(pygame.image.load("data/column.png"), (COLUMN_WIDTH, HEIGHT_SCREEN))
 MUSIC = pygame.mixer.Sound("data/click.wav")
-
+MUSIC_TING = pygame.mixer.Sound("data/ting.wav")
 screen = pygame.display.set_mode((WIDTH_SCREEN, HEIGHT_SCREEN))
 pygame.display.set_caption("Flappy Bird")
 
@@ -44,7 +44,7 @@ def play_music(music):
     music.play()
 
 def new_game():
-    global scores, speedUp, speedDown, game_speed, rotate, bird, column
+    global scores, speedUp, speedDown, game_speed, bird, column
 
     bird.x = 150
     bird.y = 150
@@ -54,7 +54,7 @@ def new_game():
     speedUp = 50
     speedDown = SPEED_FALL_DEFAULT
     game_speed = 2
-    rotate = 0
+    bird.rotate = 0
     scores = 0
 
 SPEED_FALL_DEFAULT = 1
@@ -63,7 +63,6 @@ speedUp = 40
 speedDown = SPEED_FALL_DEFAULT
 game_speed = 2
 
-rotate = 0
 G = 9.8
 time = 0.0
 lost_game = False
@@ -81,7 +80,7 @@ if __name__ == "__main__":
                 if e.key == pygame.K_SPACE:
                     bird.move(0, -speedUp)
                     play_music(MUSIC)
-                    rotate = 45
+                    bird.rotate = 45
                     speedDown = SPEED_FALL_DEFAULT
                     time = 0.0
 
@@ -89,16 +88,16 @@ if __name__ == "__main__":
                 bird.move(0, - speedUp)
                 play_music(MUSIC)
                 speedDown = 0
-                rotate = 45
+                bird.rotate = 45
                 speedDown = SPEED_FALL_DEFAULT
                 time = 0.0
        
-        bird.draw(screen, BIRD_IMG, rotate)
+        
         for column in columns:
             if (column.x <= WIDTH_SCREEN):
                 column.draw(screen, COLUMN_IMG)
-
-        draw_text(screen, "Arial", "Scores: {}".format(scores), 20, 20, 30, color= TEXT_COLOR)
+        bird.draw(screen, BIRD_IMG)
+        draw_text(screen, "Arial", "Scores: {}".format(scores),20, 20, 30, color= TEXT_COLOR)
         
         bird.move(0, speedDown)
         for col in columns:
@@ -107,8 +106,8 @@ if __name__ == "__main__":
         time += 0.01 
         speedDown = G * time
         
-        if rotate > -30:
-            rotate -= 1
+        if bird.rotate > -30:
+            bird.rotate -= 1
         ##********************* handel lost game
         while lost_game:
             for e in pygame.event.get():
@@ -140,7 +139,7 @@ if __name__ == "__main__":
             if column.x < -column.w:
                 column.refresh(WIDTH_SCREEN, randint(90, 110))
                 scores += 1
-                play_music(MUSIC)
+                play_music(MUSIC_TING)
                 game_speed += 0.001
 
             if column.collide_with(bird, 10): # column must be the instance call not bird.collide_with(column) 
